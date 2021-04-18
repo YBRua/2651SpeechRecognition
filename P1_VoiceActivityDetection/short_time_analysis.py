@@ -1,24 +1,23 @@
-# %%
+# %% libraries and function defs
 import os
 import numpy as np
 import pandas as pd
 import scipy.io.wavfile as wavfile
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
 from tqdm import tqdm
 
-from vad_utils import read_label_from_file
-from short_time_features import extract_short_time_features
+from vad_utils import read_label_from_file, pad_labels
+from short_time_features import extract_time_domain_features
 from short_time_features import binned_stft
-
-
-def pad_labels(labels, frames):
-    return np.pad(labels, (0, np.maximum(frames - len(labels), 0)))[:frames]
 
 
 def time_domain_features(
         index, file_name, data, label, df,
         frame_size=512, frame_shift=128,
         use_window='hamming', medfilt_size=3):
-    mag, eng, zcr = extract_short_time_features(
+    mag, eng, zcr = extract_time_domain_features(
         data, use_window,
         frame_size, frame_shift, medfilt_size)
 
@@ -100,7 +99,14 @@ def feature_analysis(
     return time_analysis, freq_analysis
 
 
-# %%
+# %% short-time feature extraction
 data_path = './wavs/dev'
 labels = read_label_from_file()
 time, freq = feature_analysis(data_path, labels)
+
+time.to_csv('./time_domain_features.csv', index=False)
+freq.to_csv('./freq_domain_features.csv', index=False)
+
+# %% load files
+time = pd.read_csv('./time_domain_features.csv')
+freq = pd.read_csv('./freq_domain_features.csv')

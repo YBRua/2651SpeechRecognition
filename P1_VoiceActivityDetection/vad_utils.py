@@ -1,4 +1,5 @@
 from pathlib import Path
+import numpy as np
 
 
 def parse_vad_label(line, frame_size: float = 0.032, frame_shift: float = 0.008):
@@ -103,6 +104,10 @@ def prediction_to_vad_label(
             )
         prev_state = state
     return " ".join(speech_frames)
+
+
+def pad_labels(labels, frames):
+    return np.pad(labels, (0, np.maximum(frames - len(labels), 0)))[:frames]
 
 
 ##############################################

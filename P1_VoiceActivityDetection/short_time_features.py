@@ -34,9 +34,6 @@ def segmentation(
 def zero_crossing_rate(data) -> typing.List[float]:
     """Computes the short-time zero-crossing rate.
 
-    Arguments:
-        data: 2d-array -- framed voice data
-
     Returns:
         short_time_zcr -- a list of zero-crossing rate
     """
@@ -51,8 +48,6 @@ def energy(data, window, take_sqrt=True) -> typing.List[float]:
     """Computes the short-time energy.
 
     Arguments:
-        data: 2d-array -- framed voice data
-        window: array -- window for the frame.
         take_sqrt: boolean -- if True, returns the square root of energy
                                 (Default: True)
 
@@ -74,10 +69,6 @@ def log_energy(data, window) -> typing.List[float]:
 def magnitude(data, window) -> typing.List[float]:
     """Computes the short time magnitude.
 
-    Arguments:
-        data: 2d-array -- framed voice data
-        window: array -- window for each frame.
-
     Returns:
         short_time_magnitude -- a list of short time magnitude
                                 computed at each frame.
@@ -87,7 +78,7 @@ def magnitude(data, window) -> typing.List[float]:
     return short_time_magnitude
 
 
-def extract_short_time_features(
+def extract_time_domain_features(
         data,
         use_window='hamming',
         frame_size=512,
@@ -100,11 +91,6 @@ def extract_short_time_features(
     so remember to do them manually
 
     Arguments:
-        data: 1darray -- wav data read from a .wav file
-        use_window: string -- window to be applied on each frame
-                              (default: hamming)
-        frame_size: int -- num of samples in a frame (default: 512)
-        frame_shift: int -- num of samples skipped per shift (default: 128)
         medfilt_size: int -- size of median filter, no filtering if 0
                              (default: 3)
 
@@ -137,23 +123,17 @@ def binned_stft(
     """Performs STFT on input signal and bin signal according to frequencies.
 
     Arguments:
-        data: 1darray -- wav data read from a .wav file
-        use_window: string -- window to be applied on each frame
-                              (default: hamming)
         bin_mode: string -- binning mode.
                             coarse: divide frequencies into 3 bins,
                                 boundary: 500Hz and 3000Hz
                             fine: divied frequencies into fine-grained bins,
                                 boundary: 32Hz, 64Hz, ..., 2**iHz
                             (default: 'coarse')
-        frame_size: int -- num of samples in a frame
-                           (default: 512)
-        frame_shift: int -- num of samples skipped per shift
-                            (default: 128)
 
     Returns:
         binned_energy: list -- binned rms energy in frequency domain
     """
+    data *= 32767
     overlap_size = frame_size - frame_shift
     freq, time, zxx = signal.stft(
         data,
@@ -187,3 +167,11 @@ def binned_stft(
             "Valid params are: ['coarse', 'fine']")
 
     return binned_energy
+
+
+def feature_extraction(x):
+    mag, eng, zcr = extract_time_domain_features(x)
+    binned_energy = binned_stft(x)
+    result = np.array([mag, eng, zcr, *binned_energy])
+
+    return result
