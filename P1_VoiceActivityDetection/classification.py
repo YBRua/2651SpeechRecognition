@@ -3,7 +3,6 @@ import os
 import numpy as np
 import pandas as pd
 import scipy.io.wavfile as wavfile
-import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 from short_time_features import feature_extraction
@@ -12,41 +11,70 @@ from vad_utils import read_label_from_file
 from evaluate import get_metrics
 from classifiers.basic import BasicThresholdClassifer
 
-# %% load files
+
 # always run short_time_analysis.py
-# before running the lines below
-time = pd.read_csv('./time_domain_features.csv')
-freq = pd.read_csv('./freq_domain_features.csv')
+# before calling the functions below
+def load_all_data(
+    dev_set_path='./wavs/dev',
+    label_path='./data/dev_label.txt'
+):
+    labels = read_label_from_file(label_path)
+    all_frames = np.zeros([0, 6])
+    all_labels = np.zeros([0])
 
-# %% validate
-data_path = './wavs/dev'
-labels = read_label_from_file()
-classifier = BasicThresholdClassifer(time, freq)
+    for root, dirs, files in os.walk(dev_set_path):
+        for index, f in enumerate(tqdm(files)):
+            if '.wav' in f:
+                rate, raw_data = wavfile.read(os.path.join(dev_set_path, f))
+                data = np.array(raw_data, dtype=float)
+                data -= np.mean(data)   # remove dc-offset
+                data /= 32767           # normalize
+
+                frames = feature_extraction(data).T
+                ground_truth = pad_labels(
+                    labels[f.split('.wav')[0]], frames.shape[0])
+                all_frames = np.concatenate([all_frames, frames], axis=0)
+                all_labels = np.concatenate([all_labels, ground_truth], axis=0)
+
+    return all_frames, all_labels
 
 
-auc_list = []
-eer_list = []
-for root, dirs, files in os.walk(data_path):
-    for index, f in enumerate(tqdm(files)):
-        if '.wav' in f:
-            pred = []
-            rate, raw_data = wavfile.read(os.path.join(data_path, f))
-            data = np.array(raw_data, dtype=float)
-            data -= np.mean(data)   # remove dc-offset
-            data /= 32767           # normalization
+def run_on_devset(
+    classifier,
+    dev_set_path='./wavs/dev',
+    label_path='./data/dev_label.txt'
+):
+    """Run the classifier on the given trainning or developing set.
 
-            results = feature_extraction(data).T
-            for frame in results:
-                p = classifier.pred(frame)
-                pred.append(p)
+    Arguments:
+    classifier -- A classifier for VAD tasks
+    dev_set_path -- path to dev sets
+    label_path -- path to unparsed labels (a .txt file)
+                  (default: ./data/dev_label.txt)
 
-            ground_truth = pad_labels(labels[f.split('.wav')[0]], len(pred))
-            auc, eer = get_metrics(pred, ground_truth)
-            auc_list.append(auc)
-            eer_list.append(eer)
+    Returns:
+    auc, eer -- metrics of current classifier on current data set.
+    """
+    frames, labels = load_all_data(dev_set_path, label_path)
+    pred = classifier.pred(frames)
 
-# %%
-print('Validation Finished.')
-print('  - Average AUC: {:.2f}'.format(np.mean(auc_list)*100))
-print('  - Average EER: {:.2f}'.format(np.mean(eer_list)))
-plt.scatter(range(len(auc_list)), auc_list)
+    auc, eer = get_metrics(pred, labels)
+    print('Run Finished.')
+    print('  - Average AUC: {:.4f}'.format(auc))
+    print('  - Average EER: {:.4f}'.format(eer))
+
+    return auc, eer
+
+
+def quick_pass(classifier, frames, labels):
+    pred = classifier.pred(frames)
+    auc, eer = get_metrics(pred, labels)
+    return auc, eer
+
+
+if __name__ == '__main__':
+    time = pd.read_csv('./time_domain_features.csv')
+    freq = pd.read_csv('./freq_domain_features.csv')
+    data_path = ('./wavs/dev')
+    classifier = BasicThresholdClassifer(time, freq)
+    run_on_devset(classifier, data_path)
