@@ -14,12 +14,13 @@ In the first part of this project, we implements a basic voice activity detector
 - [x] estimate average values of features, to be used as thresholds
 - [x] find and implement a proper classifier
 - [x] Reference book: Bayes-based VAD
+- [x] Parameter tuning
+- [x] How to use ZCR and Low-freq Energy
+- [x] doc strings for functions
+
 ### ToDo
 - [ ] Write technical report
-- [ ] Parameter tuning
-- [ ] How to use ZCR and Low-freq Energy?
 - [ ] denoising?
-- [ ] doc strings for functions?
 
 ### Problems and Notes
 - some speech files have DC offset. Eg. `472-130755-0013.wav`

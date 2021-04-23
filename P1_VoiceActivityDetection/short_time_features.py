@@ -91,8 +91,16 @@ def extract_time_domain_features(
     so remember to do them manually
 
     Arguments:
-        medfilt_size: int -- size of median filter, no filtering if 0
-                             (default: 3)
+        data: array -- input .wav array
+        use_window: string -- window to be added on each frame.
+                              (default: 'hamming')
+        frame_size: int -- size of each frame
+                           (default: 512, 0.032s at 16kHz rate)
+        frame_shift: int -- length to jump between frames
+                            (default: 128, 0.008s at 16kHz rate)
+        medfilt_size: int -- size of median filter, applied on the
+                             extracted features, to cancel noises.
+                             (default: 3; no filter if 0)
 
     Returns:
         mag: list -- short-time magnitude
@@ -123,12 +131,18 @@ def binned_stft(
     """Performs STFT on input signal and bin signal according to frequencies.
 
     Arguments:
+        data: array -- input (normalized) .wav file
+        use_window: string -- window to be used on each frame
+                              (default: 'hamming')
         bin_mode: string -- binning mode.
                             coarse: divide frequencies into 3 bins,
                                 boundary: 500Hz and 3000Hz
                             fine: divied frequencies into fine-grained bins,
                                 boundary: 32Hz, 64Hz, ..., 2**iHz
                             (default: 'coarse')
+        frame_size: int -- default: 512
+        frame_shift: int -- default: 128
+        sample_rate: int -- default: 16000
 
     Returns:
         binned_energy: list -- binned rms energy in frequency domain
@@ -149,7 +163,9 @@ def binned_stft(
         while 2 ** i < sample_rate / 2:
             lower_bound = 2 ** i - 1
             upper_bound = 2 ** (i+1) - 1
-            valid = np.where((lower_bound <= freq) & (freq < upper_bound), zxx, 0)
+            valid = np.where(
+                (lower_bound <= freq) & (freq < upper_bound), zxx, 0
+            )
             rms = np.sqrt(np.mean(np.abs(valid)**2, axis=0))
             binned_energy.append(rms)
             i += 1
@@ -157,7 +173,9 @@ def binned_stft(
         div = [500, 3000, sample_rate]
         lower_bound = 0
         for upper_bound in div:
-            valid = np.where((lower_bound <= freq) & (freq < upper_bound), zxx, 0)
+            valid = np.where(
+                (lower_bound <= freq) & (freq < upper_bound), zxx, 0
+            )
             rms = np.sqrt(np.mean(np.abs(valid)**2, axis=0))
             binned_energy.append(rms)
             lower_bound = upper_bound
@@ -169,9 +187,40 @@ def binned_stft(
     return binned_energy
 
 
-def feature_extraction(x):
-    mag, eng, zcr = extract_time_domain_features(x)
-    binned_energy = binned_stft(x)
+def feature_extraction(
+    data,
+    use_window='hamming',
+    frame_size=512, frame_shift=128,
+    medfilt_size=3,
+    bin_mode='coarse', sample_rate=16000
+):
+    """Extracts the features of a given input.
+
+    Arguments:
+        data: array -- input (normalized) .wav file
+        use_window: string -- window to be used on each frame
+                              (default: 'hamming')
+        frame_size: int -- default: 512
+        frame_shift: int -- default: 128
+        medfilt_size: int -- size of median filter, applied on the
+                             extracted features, to cancel noises.
+                             (default: 3; no filter if 0)
+        bin_mode: string -- binning mode.
+            - coarse: divide frequencies into 3 bins,
+                    boundary: 500Hz and 3000Hz
+            - fine: divied frequencies into fine-grained bins,
+                    boundary: 32Hz, 64Hz, ..., 2**iHz
+            (default: 'coarse')
+        sample_rate: int -- default: 16000
+    """
+    mag, eng, zcr = extract_time_domain_features(
+        data, use_window,
+        frame_size, frame_shift, medfilt_size
+    )
+    binned_energy = binned_stft(
+        data, use_window, bin_mode,
+        frame_size, frame_shift, sample_rate
+    )
     result = np.array([mag, eng, zcr, *binned_energy])
 
     return result

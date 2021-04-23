@@ -2,26 +2,15 @@ from collections import namedtuple
 import numpy as np
 
 
-Voiced = namedtuple(
-    'Voiced',
+Stats = namedtuple(
+    'Stats',
     [
-        'mean_magnitude', 'min_magnitude',
-        'mean_energy', 'min_energy',
-        'mean_zcr', 'min_zcr',
-        'mean_lowfreq', 'min_lowfreq',
-        'mean_medfreq', 'min_medfreq',
-        'mean_highfreq', 'min_highfreq',
-    ])
-
-Unvoiced = namedtuple(
-    'Unvoiced',
-    [
-        'mean_magnitude', 'max_magnitude',
-        'mean_energy', 'max_energy',
-        'mean_zcr', 'max_zcr',
-        'mean_lowfreq', 'max_lowfreq',
-        'mean_medfreq', 'max_medfreq',
-        'mean_highfreq', 'max_highfreq',
+        'magnitude',
+        'energy',
+        'zcr',
+        'lowfreq',
+        'medfreq',
+        'highfreq',
     ]
 )
 
@@ -39,41 +28,39 @@ ScoreWeight = namedtuple(
 
 class BasicThresholdClassifer():
     def __init__(self, time, freq, score_weight=None):
-        self.voiced = Voiced(
-            time['Voiced Magnitude'].mean(), time['Voiced Magnitude'].min(),
-            time['Voiced Energy'].mean(), time['Voiced Energy'].min(),
-            time['Voiced ZCR'].mean(), time['Voiced ZCR'].min(),
-            freq['Voiced LowFreq'].mean(), freq['Voiced LowFreq'].mean(),
-            freq['Voiced MedFreq'].mean(), freq['Voiced MedFreq'].min(),
-            freq['Voiced HighFreq'].mean(), freq['Voiced HighFreq'].min()
+        self.voiced = Stats(
+            time['Voiced Magnitude'].min(),
+            time['Voiced Energy'].min(),
+            time['Voiced ZCR'].min(),
+            freq['Voiced LowFreq'].mean(),
+            freq['Voiced MedFreq'].min(),
+            freq['Voiced HighFreq'].min()
         )
-        self.unvoiced = Unvoiced(
-            time['Unvoiced Magnitude'].mean(), time['Unvoiced Magnitude'].max(),
-            time['Unvoiced Energy'].mean(), time['Unvoiced Energy'].max(),
-            time['Unvoiced ZCR'].mean(), time['Unvoiced ZCR'].max(),
-            freq['Unvoiced LowFreq'].mean(), freq['Unvoiced LowFreq'].max(),
-            freq['Unvoiced MedFreq'].mean(), freq['Unvoiced MedFreq'].max(),
-            freq['Unvoiced HighFreq'].mean(), freq['Unvoiced HighFreq'].max()
+        self.unvoiced = Stats(
+            time['Unvoiced Magnitude'].max(),
+            time['Unvoiced Energy'].max(),
+            time['Unvoiced ZCR'].max(),
+            freq['Unvoiced LowFreq'].max(),
+            freq['Unvoiced MedFreq'].max(),
+            freq['Unvoiced HighFreq'].max()
         )
 
         self.mag_boundary =\
-            (self.voiced.min_magnitude + self.unvoiced.max_magnitude) / 2
+            (self.voiced.magnitude + self.unvoiced.magnitude) / 2
         self.energy_boundary =\
-            (self.voiced.min_energy + self.unvoiced.max_energy) / 2
+            (self.voiced.energy + self.unvoiced.energy) / 2
         self.zcr_boundary =\
-            (self.voiced.min_zcr + self.unvoiced.max_zcr) / 2
+            (self.voiced.zcr + self.unvoiced.zcr) / 2
         self.lowfreq_boundary =\
-            (self.voiced.min_lowfreq + self.unvoiced.max_lowfreq) / 2
+            (self.voiced.lowfreq + self.unvoiced.lowfreq) / 2
         self.medfreq_boundary =\
-            (self.voiced.min_medfreq + self.unvoiced.max_medfreq) / 2
+            (self.voiced.medfreq + self.unvoiced.medfreq) / 2
         self.highfreq_boundary =\
-            (self.voiced.min_highfreq + self.unvoiced.max_highfreq) / 2
+            (self.voiced.highfreq + self.unvoiced.highfreq) / 2
 
         self.state = 0
 
-        if score_weight is not None:
-            self.weight = score_weight
-        else:
+        if score_weight is None:
             self.weight = ScoreWeight(
                 mag=2,
                 enr=2,
@@ -85,6 +72,8 @@ class BasicThresholdClassifer():
                 primary_passes=5,
                 secondary_passes=6
             )
+        else:
+            self.weight = score_weight
 
     def _check_primary_features(self, x):
         passes = 0
