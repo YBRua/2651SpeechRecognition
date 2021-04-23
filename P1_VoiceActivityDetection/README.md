@@ -1,11 +1,12 @@
 # AI2651 Project 1 Part 1
+[github](https://github.com/YBRua/2651SpeechRecognition/tree/main/P1_VoiceActivityDetection)
 ## 如何运行
 - 在开始之前：
   - 请保证本项目中的所有文件相对位置正确
   - 请确保data和wavs两个文件夹在当前目录下（或者在代码中重新配置路径）
   - 请确保当前目录下有 `time_domain_features.csv` 和 `freq_domain_features.csv` 两个csv文件（如果没有，请先运行[`short_time_analysis.py`](./short_time_analysis.py))。这是因为分类器的阈值并没有硬编码在代码中，而是需要根据上述两个csv文件确定阈值。
 - 要验证特征提取流程和模型在开发集上的表现，请运行[`run_on_def_set.py`](./run_on_dev_set.py)。该文件包括了特征提取、数据分析、构建分类器以及在开发集上验证分类器的全部流程。
-- 要使用分类器对测试集上的语音文件进行分类，请运行`run_on_test_set.py`。
+- 要使用分类器对测试集上的语音文件进行分类，请运行[`run_on_test_set.py`](./run_on_test_set.py)。
 
 ## 其他文件
 - classifiers文件夹下存放了分类器的实现代码。目前只有[阈值分类器](./classifiers/basic.py)。
