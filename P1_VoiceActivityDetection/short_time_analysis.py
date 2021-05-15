@@ -6,11 +6,11 @@ import scipy.io.wavfile as wavfile
 from tqdm import tqdm
 
 from vad_utils import read_label_from_file, pad_labels
-from short_time_features import extract_time_domain_features
+from short_time_features import extract_temporal_features
 from short_time_features import binned_stft
 
 
-def time_domain_features(
+def temporal_features(
     index, file_name, data, label, df,
     frame_size=512, frame_shift=128,
     use_window='hamming', medfilt_size=3
@@ -27,7 +27,7 @@ def time_domain_features(
     Returns:
         time-domain analysis results for voiced and unvoiced frames
     """
-    mag, eng, zcr = extract_time_domain_features(
+    mag, eng, zcr = extract_temporal_features(
         data, use_window,
         frame_size, frame_shift, medfilt_size)
 
@@ -47,7 +47,7 @@ def time_domain_features(
     return current
 
 
-def freq_domain_features(
+def stft_features(
     index, file_name, data, label, df,
     frame_size=512, frame_shift=128,
     use_window='hamming', sample_rate=16000, bin_mode='coarse'
@@ -85,7 +85,7 @@ def freq_domain_features(
     return current
 
 
-def feature_analysis(
+def naive_feature_analysis(
     path, labels,
     frame_size=512, frame_shift=128,
     use_window='hamming', medfilt_size=3
@@ -128,10 +128,14 @@ def feature_analysis(
                     (len(data)-(frame_size-frame_shift)) / frame_shift))
                 label = pad_labels(labels[f.split('.wav')[0]], length)
 
-                time_analysis = time_domain_features(
-                    index, f, data, label, time_analysis)
-                freq_analysis = freq_domain_features(
-                    index, f, data, label, freq_analysis)
+                time_analysis = temporal_features(
+                    index, f, data, label, time_analysis,
+                    frame_size, frame_shift,
+                    use_window, medfilt_size)
+                freq_analysis = stft_features(
+                    index, f, data, label, freq_analysis,
+                    frame_size, frame_shift,
+                    use_window, rate)
 
     return time_analysis, freq_analysis
 
@@ -139,7 +143,7 @@ def feature_analysis(
 if __name__ == '__main__':
     data_path = './wavs/dev'
     labels = read_label_from_file()
-    time, freq = feature_analysis(data_path, labels, medfilt_size=15)
+    time, freq = naive_feature_analysis(data_path, labels, medfilt_size=15)
 
     time.to_csv('./time_domain_features.csv', index=False)
     freq.to_csv('./freq_domain_features.csv', index=False)

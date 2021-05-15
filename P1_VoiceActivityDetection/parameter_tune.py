@@ -5,7 +5,7 @@ from tqdm import trange
 
 from classifiers.basic import BasicThresholdClassifer
 from classification import quick_pass, load_all_data
-from short_time_analysis import feature_analysis
+from short_time_analysis import naive_feature_analysis
 from vad_utils import read_label_from_file
 
 
@@ -31,7 +31,7 @@ highest = baseline_auc
 results = []
 # %% feature analysis
 labels = read_label_from_file()
-time, freq = feature_analysis(
+time, freq = naive_feature_analysis(
     dev_set_path, labels,
     N_FRAME, N_SHIFT,
     medfilt_size=med_filtering

@@ -1,7 +1,7 @@
 # %% import libraries and initialize
 from classifiers.basic import BasicThresholdClassifer, ScoreWeight
 from classification import load_all_data
-from short_time_analysis import feature_analysis
+from short_time_analysis import naive_feature_analysis
 from vad_utils import read_label_from_file
 from evaluate import get_metrics
 
@@ -24,7 +24,7 @@ optimal_weight = ScoreWeight(
 )
 # %% feature analysis
 labels = read_label_from_file(dev_label_path)
-time, freq = feature_analysis(
+time, freq = naive_feature_analysis(
     dev_set_path, labels,
     N_FRAME, N_SHIFT,
     medfilt_size=medfilt_size

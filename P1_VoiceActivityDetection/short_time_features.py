@@ -78,7 +78,7 @@ def magnitude(data, window) -> typing.List[float]:
     return short_time_magnitude
 
 
-def extract_time_domain_features(
+def extract_temporal_features(
         data,
         use_window='hamming',
         frame_size=512,
@@ -213,7 +213,7 @@ def feature_extraction(
             (default: 'coarse')
         sample_rate: int -- default: 16000
     """
-    mag, eng, zcr = extract_time_domain_features(
+    mag, eng, zcr = extract_temporal_features(
         data, use_window,
         frame_size, frame_shift, medfilt_size
     )
