@@ -4,7 +4,7 @@ import numpy as np
 import scipy.io.wavfile as wavfile
 from tqdm import tqdm
 
-from short_time_features import feature_extraction
+from short_time_features import naive_input_converter
 from vad_utils import pad_labels
 from vad_utils import read_label_from_file
 from evaluate import get_metrics
@@ -41,7 +41,7 @@ def load_all_data(
                 data -= np.mean(data)   # remove dc-offset
                 data /= 32767           # normalize
 
-                frames = feature_extraction(
+                frames = naive_input_converter(
                     data,
                     use_window,
                     frame_size,

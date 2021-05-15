@@ -49,7 +49,7 @@ def energy(data, window, take_sqrt=True) -> typing.List[float]:
 
     Arguments:
         take_sqrt: boolean -- if True, returns the square root of energy
-                                (Default: True)
+            (Default: True)
 
     Returns:
         short_time_energy -- a list of short time energy
@@ -71,7 +71,7 @@ def magnitude(data, window) -> typing.List[float]:
 
     Returns:
         short_time_magnitude -- a list of short time magnitude
-                                computed at each frame.
+            computed at each frame.
     """
     short_time_magnitude = np.sum(np.multiply(np.abs(data), window), axis=-1)
 
@@ -127,22 +127,24 @@ def binned_stft(
         bin_mode='coarse',
         frame_size=512,
         frame_shift=128,
-        sample_rate=16000):
+        sample_rate=16000,
+        boundary=None):
     """Performs STFT on input signal and bin signal according to frequencies.
 
     Arguments:
         data: array -- input (normalized) .wav file
         use_window: string -- window to be used on each frame
-                              (default: 'hamming')
+            (default: 'hamming')
         bin_mode: string -- binning mode.
-                            coarse: divide frequencies into 3 bins,
-                                boundary: 500Hz and 3000Hz
-                            fine: divied frequencies into fine-grained bins,
-                                boundary: 32Hz, 64Hz, ..., 2**iHz
-                            (default: 'coarse')
+            coarse: divide frequencies into 3 bins,
+                boundary: 500Hz and 3000Hz
+            fine: divied frequencies into fine-grained bins,
+                boundary: 32Hz, 64Hz, ..., 2**iHz
+            (default: 'coarse')
         frame_size: int -- default: 512
         frame_shift: int -- default: 128
         sample_rate: int -- default: 16000
+        boudnary: string | None -- boundary passed to scipy.signal.stft()
 
     Returns:
         binned_energy: list -- binned rms energy in frequency domain
@@ -155,7 +157,7 @@ def binned_stft(
         use_window,
         frame_size,
         overlap_size,
-        boundary=None)
+        boundary=boundary)
     freq = np.expand_dims(freq, -1)
     binned_energy = []
     if bin_mode == 'fine':
@@ -187,14 +189,15 @@ def binned_stft(
     return binned_energy
 
 
-def feature_extraction(
+def naive_input_converter(
     data,
     use_window='hamming',
     frame_size=512, frame_shift=128,
     medfilt_size=3,
     bin_mode='coarse', sample_rate=16000
 ):
-    """Extracts the features of a given input.
+    """Extracts the features of a given input wav file.
+    And converts wav into the input for classifier in task1.
 
     Arguments:
         data: array -- input (normalized) .wav file
