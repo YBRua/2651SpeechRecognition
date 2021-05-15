@@ -4,7 +4,7 @@ import numpy as np
 
 def extract_mfcc(mel_s, rate, n_mfcc=20):
     """Extracts MFCC features.
-    Includes MFCC and 1st- and 2nd-order deltas.
+    Includes MFCC and 2nd- and 3rd-order deltas.
 
     Arguments:
         mel_s: 2darray -- Mel-Field Spectrogram.
@@ -15,6 +15,7 @@ def extract_mfcc(mel_s, rate, n_mfcc=20):
         feature: 1darray -- MFCC and deltas, concatenated into an array.
     """
     mfcc = librosa.feature.mfcc(sr=rate, S=mel_s, n_mfcc=n_mfcc)
+    mfcc -= np.mean(mfcc, axis=1).reshape(-1, 1)
     mfcc_d1 = librosa.feature.delta(mfcc, order=1)
     mfcc_d2 = librosa.feature.delta(mfcc, order=2)
     feature = np.concatenate([mfcc, mfcc_d1, mfcc_d2], axis=0)
@@ -41,7 +42,7 @@ def rms_energy(stft_s):
 def spectral_feature_extractor(
     data, rate=16000,
     n_frame=512, n_shift=128,
-    use_window='hann'
+    use_window='hann', n_mfcc=20
 ):
     stft = librosa.core.stft(
         data,
@@ -49,7 +50,7 @@ def spectral_feature_extractor(
         window=use_window)
     mel_s = librosa.feature.melspectrogram(sr=rate, S=np.abs(stft)**2)
 
-    mfcc = extract_mfcc(mel_s, rate)
+    mfcc = extract_mfcc(mel_s, rate, n_mfcc=n_mfcc)
     rms = rms_energy(stft)
 
     return np.concatenate([mfcc, rms], axis=0)
