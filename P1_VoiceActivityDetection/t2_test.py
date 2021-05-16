@@ -2,6 +2,7 @@
 from hmmlearn.hmm import GMMHMM
 from sklearn.svm import LinearSVC
 from sklearn.mixture import GaussianMixture
+from classifiers.dualGMM import DualGMMClassifier
 import os
 import sys
 import librosa
@@ -52,39 +53,29 @@ pkl.dump([X_train, sample_lengths, Y_train], open('training_data.pkl', 'wb'))
 # %%
 
 X_train, sample_lengths, Y_train = pkl.load(open('training_data.pkl', 'rb'))
+X_train = X_train.T
+X_voiced = X_train[Y_train == 1]
+X_unvoiced = X_train[Y_train == 0]
 
-VADClassifier = GaussianMixture(n_components=2,  max_iter=1000)
+VADClassifier = DualGMMClassifier(n_components=2)
+voiced_gmm = GaussianMixture(n_components=2)
 
-VADClassifier = VADClassifier.fit(X_train.T)
 # %%
-pred = VADClassifier.predict_proba(X_train.T)
+VADClassifier = VADClassifier.fit(X_voiced, X_unvoiced, Y_train)
+# %%
+pred = VADClassifier.predict_proba(X_train)
 # %%
 Y_pred = pred[:, 0]
+# Y_pred = np.where(Y_pred > 0.5, 1, 0)
 auc, eer = get_metrics(Y_pred, Y_train)
 print('Run Finished.')
 print('  - AUC: {:.4f}'.format(auc))
 print('  - EER: {:.4f}'.format(eer))
 
-
 # %%
-demo_wav_path = '54-121080-0009.wav'
+from scipy.stats import multivariate_normal
 
-data, rate = librosa.core.load(os.path.join(train_set_path, demo_wav_path))
-data -= data.mean()
 
-mfcc = librosa.feature.mfcc(
-    data, 16000,
-    hop_length=N_SHIFT, win_length=N_FRAME, n_mfcc=5
-)
-mfcc -= np.mean(mfcc, axis=1).reshape(-1, 1)
-
-stft = librosa.core.stft(
-    data,
-    hop_length=N_SHIFT, win_length=N_FRAME,)
-mel_s = librosa.feature.melspectrogram(sr=16000, S=np.abs(stft)**2)
-
-mfcc_2 = librosa.feature.mfcc(
-    sr=16000,
-    S=librosa.core.power_to_db(mel_s))
-
-# %%
+mu = VADClassifier.unvoiced_gmm.means_[4]
+sigma = VADClassifier.unvoiced_gmm.covariances_[4]
+print(multivariate_normal(mu, sigma).pdf(X_train[0, :]))

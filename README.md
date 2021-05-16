@@ -15,7 +15,10 @@ Detect voice activity using spectral features of voice signals and statistic mac
 - [x] GMM test run.
   - GMMHMM: AUC 0.87 (trained on dev set)
   - AUC 0.96 when using `predict_proba`
-- [ ] DualGMM classifier.
+- [x] DualGMM classifier.
+  - 0.94 AUC (trained on dev set)
+- [ ] Optimize file structure.
+- [ ] Training and evaluation.
 - [ ] Model selection.
 - [ ] Run on test set.
 - [ ] Technical Report.
