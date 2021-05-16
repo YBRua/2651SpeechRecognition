@@ -14,7 +14,10 @@ def extract_mfcc(mel_s, rate, n_mfcc=20):
     Returns:
         feature: 1darray -- MFCC and deltas, concatenated into an array.
     """
-    mfcc = librosa.feature.mfcc(sr=rate, S=mel_s, n_mfcc=n_mfcc)
+    mfcc = librosa.feature.mfcc(
+        sr=rate,
+        S=librosa.core.power_to_db(mel_s),
+        n_mfcc=n_mfcc)
     mfcc -= np.mean(mfcc, axis=1).reshape(-1, 1)
     mfcc_d1 = librosa.feature.delta(mfcc, order=1)
     mfcc_d2 = librosa.feature.delta(mfcc, order=2)

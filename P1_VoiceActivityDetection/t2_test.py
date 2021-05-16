@@ -1,11 +1,13 @@
 # %%
+from hmmlearn.hmm import GMMHMM
+from sklearn.svm import LinearSVC
+from sklearn.mixture import GaussianMixture
 import os
 import sys
 import librosa
 import numpy as np
 import pickle as pkl
 from tqdm import tqdm
-from hmmlearn.hmm import GMMHMM
 
 from spectral_feature import spectral_feature_extractor
 from vad_utils import read_label_from_file, pad_labels
@@ -31,12 +33,12 @@ for root, dirs, files in os.walk(train_set_path):
     i = 0
     for f in tqdm(files):
         if '.wav' in f:
-            data, rate = librosa.core.load(os.path.join(train_set_path, f))
+            data, rate = librosa.core.load(
+                os.path.join(train_set_path, f), sr=None)
             data -= np.mean(data)
-            data /= 32767
 
             wav_feature = spectral_feature_extractor(
-                data, rate, N_FRAME, N_SHIFT, n_mfcc=12)
+                data, 16000, N_FRAME, N_SHIFT, n_mfcc=12)
             sample_lengths = np.append(sample_lengths, wav_feature.shape[-1])
 
             X_train = np.concatenate([X_train, wav_feature], axis=-1)
@@ -48,17 +50,41 @@ for root, dirs, files in os.walk(train_set_path):
 pkl.dump([X_train, sample_lengths, Y_train], open('training_data.pkl', 'wb'))
 
 # %%
-VADClassifier = GMMHMM(
-    n_components=2, n_mix=7,
-    verbose=True, n_iter=500, random_state=0,
-    tol=1e-3
-)
-VADClassifier.fit(X_train.T, sample_lengths)
+
+X_train, sample_lengths, Y_train = pkl.load(open('training_data.pkl', 'rb'))
+
+VADClassifier = GaussianMixture(n_components=2,  max_iter=1000)
+
+VADClassifier = VADClassifier.fit(X_train.T)
 # %%
 pred = VADClassifier.predict_proba(X_train.T)
 # %%
-Y_pred = np.argmin(pred, axis=1)
+Y_pred = pred[:, 0]
 auc, eer = get_metrics(Y_pred, Y_train)
 print('Run Finished.')
 print('  - AUC: {:.4f}'.format(auc))
 print('  - EER: {:.4f}'.format(eer))
+
+
+# %%
+demo_wav_path = '54-121080-0009.wav'
+
+data, rate = librosa.core.load(os.path.join(train_set_path, demo_wav_path))
+data -= data.mean()
+
+mfcc = librosa.feature.mfcc(
+    data, 16000,
+    hop_length=N_SHIFT, win_length=N_FRAME, n_mfcc=5
+)
+mfcc -= np.mean(mfcc, axis=1).reshape(-1, 1)
+
+stft = librosa.core.stft(
+    data,
+    hop_length=N_SHIFT, win_length=N_FRAME,)
+mel_s = librosa.feature.melspectrogram(sr=16000, S=np.abs(stft)**2)
+
+mfcc_2 = librosa.feature.mfcc(
+    sr=16000,
+    S=librosa.core.power_to_db(mel_s))
+
+# %%
