@@ -47,6 +47,20 @@ def spectral_feature_extractor(
     n_frame=512, n_shift=128,
     use_window='hann', n_mfcc=20
 ):
+    """Extracts spectral feature.
+    Includes mfcc, 1st and 2nd deltas of mfcc, and rms energy.
+
+    Arguments:
+        data: 1darray -- input speech signal array
+        rate: int -- sample rate
+        n_frame: int -- number of samples per frame
+        n_shift: int -- number of hops between frames
+        use_window: str -- window function to be used in stft
+        n_mfcc: int -- n_mfcc passed into librosa.features.mfcc
+
+    Returns:
+        features: 2darray -- (n_features, n_samples) output array.
+    """
     stft = librosa.core.stft(
         data,
         hop_length=n_shift, win_length=n_frame,

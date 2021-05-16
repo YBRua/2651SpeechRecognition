@@ -1,7 +1,7 @@
 import pandas as pd
 
 from classifiers.basic import BasicThresholdClassifer
-from classification import load_all_data
+from data_loader import short_time_feature_loader
 from evaluate import get_metrics
 
 
@@ -20,7 +20,7 @@ time = pd.read_csv('./time_domain_features.csv')
 freq = pd.read_csv('./freq_domain_features.csv')
 
 classifier = BasicThresholdClassifer(time, freq)
-frames, labels = load_all_data(
+frames, labels = short_time_feature_loader(
     data_set_path=set_path,
     label_path=label_path,
     use_window='hamming',
@@ -30,7 +30,7 @@ frames, labels = load_all_data(
     bin_mode='coarse'
 )
 
-pred = classifier.pred(frames)
+pred = classifier.predict(frames)
 
 auc, eer = get_metrics(pred, labels)
 print('Run Finished.')

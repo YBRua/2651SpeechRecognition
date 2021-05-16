@@ -189,7 +189,7 @@ def binned_stft(
     return binned_energy
 
 
-def naive_input_converter(
+def short_time_feature_extractor(
     data,
     use_window='hamming',
     frame_size=512, frame_shift=128,

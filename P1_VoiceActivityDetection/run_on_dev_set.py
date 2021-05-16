@@ -1,6 +1,6 @@
 # %% import libraries and initialize
 from classifiers.basic import BasicThresholdClassifer, ScoreWeight
-from classification import load_all_data
+from data_loader import short_time_feature_loader
 from short_time_analysis import naive_feature_analysis
 from vad_utils import read_label_from_file
 from evaluate import get_metrics
@@ -35,7 +35,7 @@ freq.to_csv('./freq_domain_features.csv', index=False)
 
 # %% construct model and do classification
 classifier = BasicThresholdClassifer(time, freq, optimal_weight)
-frames, labels = load_all_data(
+frames, labels = short_time_feature_loader(
     data_set_path=dev_set_path,
     label_path=dev_label_path,
     use_window='hamming',
@@ -44,7 +44,7 @@ frames, labels = load_all_data(
     medfilt_size=medfilt_size,
     bin_mode='coarse'
 )
-pred = classifier.pred(frames)
+pred = classifier.predict(frames)
 
 auc, eer = get_metrics(pred, labels)
 print('Run Finished.')

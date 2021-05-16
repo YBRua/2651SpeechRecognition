@@ -4,7 +4,7 @@ import pickle
 from tqdm import trange
 
 from classifiers.basic import BasicThresholdClassifer
-from classification import quick_pass, load_all_data
+from data_loader import quick_pass, short_time_feature_loader
 from short_time_analysis import naive_feature_analysis
 from vad_utils import read_label_from_file
 
@@ -47,7 +47,7 @@ print('Loading data...')
 if os.path.exists('./dataset.pkl'):
     frames, truths = pickle.load(open('./dataset.pkl', 'rb'))
 else:
-    frames, truths = load_all_data(
+    frames, truths = short_time_feature_loader(
         dev_set_path,
         dev_label_path,
         medfilt_size=med_filtering)

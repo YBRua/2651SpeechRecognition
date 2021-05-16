@@ -116,7 +116,7 @@ class BasicThresholdClassifer():
             self.state = 0
             return 0
 
-    def pred(self, x):
+    def predict(self, x):
         pred = []
         for frame in x:
             pred.append(self.pred_one_frame(frame))

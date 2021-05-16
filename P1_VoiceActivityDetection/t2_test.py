@@ -1,6 +1,4 @@
 # %%
-from hmmlearn.hmm import GMMHMM
-from sklearn.svm import LinearSVC
 from sklearn.mixture import GaussianMixture
 from classifiers.dualGMM import DualGMMClassifier
 import os
@@ -10,7 +8,7 @@ import numpy as np
 import pickle as pkl
 from tqdm import tqdm
 
-from spectral_feature import spectral_feature_extractor
+from spectral_features import spectral_feature_extractor
 from vad_utils import read_label_from_file, pad_labels
 from evaluate import get_metrics
 

@@ -4,7 +4,7 @@ import pandas as pd
 from tqdm import tqdm
 import scipy.io.wavfile as wavfile
 
-from short_time_features import naive_input_converter
+from short_time_features import short_time_feature_extractor
 from vad_utils import prediction_to_vad_label
 from classifiers.basic import BasicThresholdClassifer, ScoreWeight
 
@@ -45,9 +45,9 @@ with open('./test_label_task1.txt', 'w') as output:
                 data /= 32767           # normalize
 
                 # feature extraction
-                frames = naive_input_converter(data, medfilt_size=medfilt_size).T
+                frames = short_time_feature_extractor(data, medfilt_size=medfilt_size).T
                 # predict labels
-                pred = classifier.pred(frames)
+                pred = classifier.predict(frames)
                 result = prediction_to_vad_label(pred)
                 output.write(result)
                 output.write('\n')
