@@ -1,7 +1,7 @@
 # %% import libraries and initialize
 from classifiers.basic import BasicThresholdClassifer, ScoreWeight
 from data_loader import short_time_feature_loader
-from short_time_analysis import naive_feature_analysis
+from task1.short_time_analysis import naive_feature_analysis
 from vad_utils import read_label_from_file
 from evaluate import get_metrics
 

@@ -5,7 +5,7 @@ from tqdm import trange
 
 from classifiers.basic import BasicThresholdClassifer
 from data_loader import quick_pass, short_time_feature_loader
-from short_time_analysis import naive_feature_analysis
+from task1.short_time_analysis import naive_feature_analysis
 from vad_utils import read_label_from_file
 
 

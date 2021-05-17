@@ -2,7 +2,12 @@ import librosa
 import numpy as np
 
 
-def extract_mfcc(mel_s, rate, n_mfcc=20):
+def extract_mfcc(
+        mel_s,
+        rate,
+        n_mfcc=20,
+        use_first_order=True,
+        use_third_order=False,):
     """Extracts MFCC features.
     Includes MFCC and 2nd- and 3rd-order deltas.
 
@@ -10,6 +15,8 @@ def extract_mfcc(mel_s, rate, n_mfcc=20):
         mel_s: 2darray -- Mel-Field Spectrogram.
         rate: int -- Sample rate of input.
         n_mfcc: int -- n_mfcc passed into librosa.feature.mfcc()
+        use_first_order: bool -- whether to include 1st-order deltas
+        use_third_order: bool -- whether to include 3rd-order deltas
 
     Returns:
         feature: 1darray -- MFCC and deltas, concatenated into an array.
@@ -19,9 +26,18 @@ def extract_mfcc(mel_s, rate, n_mfcc=20):
         S=librosa.core.power_to_db(mel_s),
         n_mfcc=n_mfcc)
     mfcc -= np.mean(mfcc, axis=1).reshape(-1, 1)
-    mfcc_d1 = librosa.feature.delta(mfcc, order=1)
+    feature = mfcc
+
+    if use_first_order:
+        mfcc_d1 = librosa.feature.delta(mfcc, order=1)
+        feature = np.concatenate([feature, mfcc_d1], axis=0)
+
     mfcc_d2 = librosa.feature.delta(mfcc, order=2)
-    feature = np.concatenate([mfcc, mfcc_d1, mfcc_d2], axis=0)
+    feature = np.concatenate([feature, mfcc_d2], axis=0)
+
+    if use_third_order:
+        mfcc_d3 = librosa.feature.delta(mfcc, order=3)
+        feature = np.concatenate([feature, mfcc_d3], axis=0)
 
     return feature
 
@@ -43,10 +59,10 @@ def rms_energy(stft_s):
 
 
 def spectral_feature_extractor(
-    data, rate=16000,
-    n_frame=512, n_shift=128,
-    use_window='hann', n_mfcc=20
-):
+        data, rate=16000,
+        n_frame=512, n_shift=128,
+        use_window='hann', n_mfcc=20,
+        use_first_order=True, use_third_order=False):
     """Extracts spectral feature.
     Includes mfcc, 1st and 2nd deltas of mfcc, and rms energy.
 
@@ -57,6 +73,8 @@ def spectral_feature_extractor(
         n_shift: int -- number of hops between frames
         use_window: str -- window function to be used in stft
         n_mfcc: int -- n_mfcc passed into librosa.features.mfcc
+        use_first_order: bool -- whether to use 1st order deltas
+        use_third_order: bool -- whether to use 3rd order deltas
 
     Returns:
         features: 2darray -- (n_features, n_samples) output array.
@@ -67,7 +85,9 @@ def spectral_feature_extractor(
         window=use_window)
     mel_s = librosa.feature.melspectrogram(sr=rate, S=np.abs(stft)**2)
 
-    mfcc = extract_mfcc(mel_s, rate, n_mfcc=n_mfcc)
+    mfcc = extract_mfcc(
+        mel_s, rate, n_mfcc=n_mfcc,
+        use_first_order=use_first_order, use_third_order=use_third_order)
     rms = rms_energy(stft)
 
     return np.concatenate([mfcc, rms], axis=0)

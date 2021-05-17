@@ -9,7 +9,7 @@ import numpy as np
 import pickle as pkl
 from tqdm import tqdm
 
-from spectral_features import spectral_feature_extractor
+from features.spectral_features import spectral_feature_extractor
 from vad_utils import read_label_from_file, pad_labels
 from evaluate import get_metrics
 

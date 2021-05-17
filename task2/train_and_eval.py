@@ -22,7 +22,6 @@ else:
     pickle.dump([X_train, sample_lengths, Y_train],
                 open('./training_set.pkl', 'wb'))
 
-# load datasets
 print('Loading dev set...', file=sys.stderr)
 if os.path.exists('./dev_set.pkl'):
     X_dev, sample_lengths, Y_dev = pickle.load(open('./dev_set.pkl', 'rb'))
@@ -32,7 +31,7 @@ else:
     pickle.dump([X_dev, sample_lengths, Y_dev], open('./dev_set.pkl', 'wb'))
 
 VADClassifier = DualGMMClassifier(
-    n_components=7,
+    n_components=3,
     covariance_type='full',
     max_iter=500,
     verbose=0,
@@ -51,7 +50,7 @@ print('Training model...', file=sys.stderr)
 VADClassifier.fit(X_train_voiced, X_train_unvoiced, Y_train)
 pickle.dump(VADClassifier, open('model_1.pkl', 'wb'))
 
-#%% evaluate
+# %% evaluate
 print('Evaluating...')
 pred_train_prob = VADClassifier.predict_proba(X_train)[:, 0]
 pred_dev_prob = VADClassifier.predict_proba(X_dev)[:, 0]

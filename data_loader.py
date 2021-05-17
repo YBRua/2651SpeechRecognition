@@ -6,8 +6,8 @@ import numpy as np
 import scipy.io.wavfile as wavfile
 from tqdm import tqdm
 
-from short_time_features import short_time_feature_extractor
-from spectral_features import spectral_feature_extractor
+from features.short_time_features import short_time_feature_extractor
+from features.spectral_features import spectral_feature_extractor
 from vad_utils import pad_labels
 from vad_utils import read_label_from_file
 from evaluate import get_metrics
@@ -81,7 +81,9 @@ def spectral_feature_loader(
     use_window='hann',
     frame_size=512,
     frame_shift=128,
-    n_mfcc=20
+    n_mfcc=20,
+    use_first_order=True,
+    use_third_order=False
 ):
     """Load training (or evaluating) data from a given directory.
     Designed for Task 2.
@@ -93,6 +95,8 @@ def spectral_feature_loader(
         frame_size: int -- number of samples per frame.
         frame_shift: int -- number of hops between frames.
         n_mfcc: int -- n_mfcc passed into librosa.features.mfcc()
+        use_first_order: bool -- whether to use 1st order deltas
+        use_third_order: bool -- whether to use 3rd order deltas
 
     Returns:
         X_train: 2darray -- (n_features, n_samples) array.
@@ -102,7 +106,12 @@ def spectral_feature_loader(
         Y_train: 1darray -- label of each sample.
     """
     labels = read_label_from_file(label_path)
-    n_features = 3 * n_mfcc + 1
+    n_deltas = 2
+    if use_first_order:
+        n_deltas += 1
+    if use_third_order:
+        n_deltas += 1
+    n_features = n_deltas * n_mfcc + 1
     X_train = np.zeros([n_features, 0])
     sample_lengths = np.zeros(0, dtype=int)
     Y_train = np.zeros([0])
@@ -119,7 +128,9 @@ def spectral_feature_loader(
                 data -= np.mean(data)
 
                 file_feature = spectral_feature_extractor(
-                    data, rate, frame_size, frame_shift, use_window, n_mfcc)
+                    data, rate, frame_size, frame_shift, use_window, n_mfcc,
+                    use_first_order=use_first_order,
+                    use_third_order=use_third_order)
                 sample_lengths = np.append(
                     sample_lengths,
                     file_feature.shape[-1])

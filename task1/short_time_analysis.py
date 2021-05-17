@@ -6,8 +6,8 @@ import scipy.io.wavfile as wavfile
 from tqdm import tqdm
 
 from vad_utils import read_label_from_file, pad_labels
-from short_time_features import extract_temporal_features
-from short_time_features import binned_stft
+from features.short_time_features import extract_temporal_features
+from features.short_time_features import binned_stft
 
 
 def temporal_features(
