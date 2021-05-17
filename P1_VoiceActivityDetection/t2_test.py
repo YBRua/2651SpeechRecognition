@@ -1,4 +1,5 @@
 # %%
+from scipy.stats import multivariate_normal
 from sklearn.mixture import GaussianMixture
 from classifiers.dualGMM import DualGMMClassifier
 import os
@@ -71,7 +72,6 @@ print('  - AUC: {:.4f}'.format(auc))
 print('  - EER: {:.4f}'.format(eer))
 
 # %%
-from scipy.stats import multivariate_normal
 
 
 mu = VADClassifier.unvoiced_gmm.means_[4]

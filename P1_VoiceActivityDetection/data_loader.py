@@ -112,24 +112,21 @@ def spectral_feature_loader(
         for f in t:
             if '.wav' in f:
                 t.set_description(
-                    'Current File {:s}'.format(f)
-                )
+                    'Current File {:s}'.format(f))
                 t.refresh()
                 data, rate = librosa.core.load(
-                    os.path.join(data_set_path, f), sr=None
-                )
+                    os.path.join(data_set_path, f), sr=None)
                 data -= np.mean(data)
 
                 file_feature = spectral_feature_extractor(
-                    data, rate, frame_size, frame_shift, use_window, n_mfcc
-                )
+                    data, rate, frame_size, frame_shift, use_window, n_mfcc)
                 sample_lengths = np.append(
                     sample_lengths,
-                    file_feature.shape[-1]
-                )
+                    file_feature.shape[-1])
 
                 X_train = np.concatenate([X_train, file_feature], axis=-1)
                 ground_truth = pad_labels(
-                    labels[f.split('.wav')[0]], file_feature.shape[-1]
-                )
+                    labels[f.split('.wav')[0]], file_feature.shape[-1])
                 Y_train = np.concatenate([Y_train, ground_truth])
+
+    return X_train, sample_lengths, Y_train

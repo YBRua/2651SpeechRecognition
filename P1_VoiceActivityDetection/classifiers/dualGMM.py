@@ -12,19 +12,22 @@ class DualGMMClassifier():
         self, n_components=3,
         covariance_type='full',
         max_iter=500,
-        verbose=0
+        verbose=0,
+        random_state=None,
     ):
         self.voiced_gmm = GaussianMixture(
             n_components=n_components,
             covariance_type=covariance_type,
             max_iter=max_iter,
-            verbose=verbose
+            verbose=verbose,
+            random_state=random_state,
         )
         self.unvoiced_gmm = GaussianMixture(
             n_components=n_components,
             covariance_type=covariance_type,
             max_iter=max_iter,
-            verbose=verbose
+            verbose=verbose,
+            random_state=random_state,
         )
 
     def fit(self, X_voiced, X_unvoiced, Y_train):
@@ -75,7 +78,27 @@ class DualGMMClassifier():
         )
 
     def predict_proba(self, X):
+        """Predicts the posterior probability, given an input X.
+
+        Arguments:
+            X: 2darray -- (n_samples, n_features) input.
+
+        Returns:
+            [voiced, unvoiced] probability.
+        """
         return np.exp(self.predict_log_proba(X))
+
+    def predict(self, X):
+        """Pedicts the label of each frame of input X.
+
+        Arguments:
+            X: 2darray -- (n_samples, n_features) input.
+
+        Returns:
+            (n_samples) {0, 1} labels.
+        """
+        proba = self.predict_proba(X)
+        return np.where(proba >= 0.5, 1, 0)
 
     def _compute_voiced_log_likelihood(self, X):
         log_likelihood, _ = self.voiced_gmm._estimate_log_prob_resp(X)
