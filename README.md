@@ -7,8 +7,6 @@ Project 1 for AI2651 Intelligent Speech Recognition.
 - `features`
   - `short_time_features`: short-time feature extraction functions
   - `spectral_features`: spectral feature extraction functions （mainly mfcc)
-- `task1`: code exclusive for [Task 1](#task-1-simple-classifier)
-- `task2`: code exclusive for [Task 2](#task-2-ml-classifiers)
 - `data_loader`: functions converting input wav into features.
 - `evaluate`: auc and eer evaluation functions (provided by TA).
 - `vad_utils`: utils (Provided by TA).
