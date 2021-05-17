@@ -1,10 +1,22 @@
-# AI2651 Intelligent Speech Recognition
-Projects and assignments for AI2651 Intelligent Speech Recognition.
-## Project 1: Voice Activity Detection
-### Task 1: Simple Classifier
+# AI2651 Project 1: Voice Activity Detection
+Project 1 for AI2651 Intelligent Speech Recognition.
+## File Structure
+- `classifiers`
+  - `basic`: basic threshold classifier
+  - `dualGMM`: GMM-based machine learning classifier
+- `features`
+  - `short_time_features`: short-time feature extraction functions
+  - `spectral_features`: spectral feature extraction functions （mainly mfcc)
+- `task1`: code exclusive for [Task 1](#task-1-simple-classifier)
+- `task2`: code exclusive for [Task 2](#task-2-ml-classifiers)
+- `data_loader`: functions converting input wav into features.
+- `evaluate`: auc and eer evaluation functions (provided by TA).
+- `vad_utils`: utils (Provided by TA).
+
+## Task 1: Simple Classifier
 Detect voice activity using short-time features of voice signals and basic linear classifiers.
 
-#### Progress
+### Progress
 > Finished!
 
 - [x] short-time energy
@@ -21,10 +33,10 @@ Detect voice activity using short-time features of voice signals and basic linea
 - [x] doc strings for functions
 - [x] Technical report.
 
-### Task 2: Spectral Features & Statistic Classifiers
+## Task 2: ML Classifiers
 Detect voice activity using spectral features of voice signals and statistic machine learning classifiers.
 
-#### Progress
+### Progress
 - [x] MFCC feature extraction
 - [x] GMMHMM test run.
   - GMM: AUC 0.86 (trained on dev set)
@@ -41,7 +53,7 @@ Detect voice activity using spectral features of voice signals and statistic mac
 - [ ] Run on test set.
 - [ ] Technical Report.
 
-#### Memo
+### Memo
 - Feature extraction on training set is SLOW.
 - `n_mfcc` matters.
 - `delta` matters. 1st- and 2nd-order or 2nd- and 3rd-order? Or all three orders?
