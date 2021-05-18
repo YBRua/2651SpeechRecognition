@@ -1,7 +1,7 @@
 # %%
 from scipy.stats import multivariate_normal
 from sklearn.mixture import GaussianMixture
-from classifiers.dualGMM import DualGMMClassifier
+from vad.classifiers.dualGMM import DualGMMClassifier
 import os
 import sys
 import librosa
@@ -9,9 +9,9 @@ import numpy as np
 import pickle as pkl
 from tqdm import tqdm
 
-from features.spectral_features import spectral_feature_extractor
-from vad_utils import read_label_from_file, pad_labels
-from evaluate import get_metrics
+from vad.features.spectral_features import spectral_feature_extractor
+from vad.vad_utils import read_label_from_file, pad_labels
+from vad.evaluate import get_metrics
 
 FRAME_SIZE = 0.032   # 100ms per frame
 FRAME_SHIFT = 0.008  # 40ms frame-shift

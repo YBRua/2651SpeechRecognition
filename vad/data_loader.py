@@ -6,11 +6,11 @@ import numpy as np
 import scipy.io.wavfile as wavfile
 from tqdm import tqdm
 
-from features.short_time_features import short_time_feature_extractor
-from features.spectral_features import spectral_feature_extractor
-from vad_utils import pad_labels
-from vad_utils import read_label_from_file
-from evaluate import get_metrics
+from vad.features.short_time_features import short_time_feature_extractor
+from vad.features.spectral_features import spectral_feature_extractor
+from vad.vad_utils import pad_labels
+from vad.vad_utils import read_label_from_file
+from vad.evaluate import get_metrics
 
 
 # always run short_time_analysis.py

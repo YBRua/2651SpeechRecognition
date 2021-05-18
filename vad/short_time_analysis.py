@@ -5,9 +5,9 @@ import pandas as pd
 import scipy.io.wavfile as wavfile
 from tqdm import tqdm
 
-from vad_utils import read_label_from_file, pad_labels
-from features.short_time_features import extract_temporal_features
-from features.short_time_features import binned_stft
+from .vad_utils import pad_labels
+from .features.short_time_features import extract_temporal_features
+from .features.short_time_features import binned_stft
 
 
 def temporal_features(
@@ -138,15 +138,3 @@ def naive_feature_analysis(
                     use_window, rate)
 
     return time_analysis, freq_analysis
-
-
-if __name__ == '__main__':
-    data_path = './wavs/dev'
-    labels = read_label_from_file()
-    time, freq = naive_feature_analysis(data_path, labels, medfilt_size=15)
-
-    time.to_csv('./time_domain_features.csv', index=False)
-    freq.to_csv('./freq_domain_features.csv', index=False)
-
-    time = pd.read_csv('./time_domain_features.csv')
-    freq = pd.read_csv('./freq_domain_features.csv')

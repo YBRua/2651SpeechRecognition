@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 matplotlib.style.use('seaborn')
 matplotlib.style.use('seaborn-white')
 
-time = pd.read_csv('./time_domain_features.csv')
-freq = pd.read_csv('./freq_domain_features.csv')
+time = pd.read_csv('./task1/time_domain_features.csv')
+freq = pd.read_csv('./task1/freq_domain_features.csv')
 
 # %%
 fig, ax = plt.subplots(1, 3, figsize=(12, 4))
