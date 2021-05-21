@@ -53,14 +53,12 @@ pkl.dump([X_train, sample_lengths, Y_train], open('training_data.pkl', 'wb'))
 
 X_train, sample_lengths, Y_train = pkl.load(open('training_data.pkl', 'rb'))
 X_train = X_train.T
-X_voiced = X_train[Y_train == 1]
-X_unvoiced = X_train[Y_train == 0]
 
 VADClassifier = DualGMMClassifier(n_components=2)
 voiced_gmm = GaussianMixture(n_components=2)
 
 # %%
-VADClassifier = VADClassifier.fit(X_voiced, X_unvoiced, Y_train)
+VADClassifier = VADClassifier.fit(X_train, Y_train)
 # %%
 pred = VADClassifier.predict_proba(X_train)
 # %%

@@ -29,12 +29,9 @@ def train(
     # convert data
     X_train = X_train.T  # (n_features, n_samples) -> (n_samples, n_features)
 
-    X_train_voiced = X_train[Y_train == 1]
-    X_train_unvoiced = X_train[Y_train == 0]
-
     # train the model
     print('Training model...', file=sys.stderr)
-    VADClassifier.fit(X_train_voiced, X_train_unvoiced, Y_train)
+    VADClassifier.fit(X_train, Y_train)
 
     # evaluate on training set
     pred_train_prob = VADClassifier.predict_proba(X_train)[:, 0]

@@ -46,8 +46,9 @@ Detect voice activity using spectral features of voice signals and statistic mac
   - 0.94 AUC (trained on dev set)
 - [x] Optimize file structure.
 - [x] Training and evaluation.
-  - [ ] Feature Engineering
-- [ ] Model selection.
+  - [x] Feature Engineering
+    - Note: feature engineering is run on 1500 samples from training set.
+- [x] Model selection.
 - [ ] Run on test set.
 - [ ] Technical Report.
 
@@ -55,3 +56,21 @@ Detect voice activity using spectral features of voice signals and statistic mac
 - Feature extraction on training set is SLOW.
 - `n_mfcc` matters.
 - `delta` matters. 1st- and 2nd-order or 2nd- and 3rd-order? Or all three orders?
+
+### Feature Engineering
+> feature engineering runned on 1500 samples of training set.
+
+|     Features          |   AUC  |  EER   | Iters To Converge  |
+| :-------------------: | :----: | :----: | :----------------: |
+| 8_mfcc, Order 1,2     | 0.9519 | 0.0613 |      10 / 60       |
+| 8_mfcc, Order 2,3     | 0.9527 | 0.0565 |      20 / 40       |
+| 8_mfcc, Order 1,2,3   | 0.9545 | 0.0489 |      20 / 70       |
+| 12_mfcc, Order 1,2    | 0.9513 | 0.0627 |      20 / 80       |
+| 12_mfcc, Order 2,3    | 0.9545 | 0.0490 |      50 / 60       |
+| 12_mfcc, Order 1,2,3  | 0.9532 | 0.0508 |      30 / 80       |
+| 15_mfcc, Order 1,2    | 0.9536 | 0.0590 |      40 / 70       |
+| 15_mfcc, Order 2,3    | 0.9434 | 0.0711 |      40 / 210      |
+| 15_mfcc, Order 1,2,3  | 0.9388 | 0.0855 |      10 / 210      |
+| 20_mfcc, Order 1,2    | 0.9380 | 0.0918 |      30 / 200      |
+| 20_mfcc, Order 2,3    | 0.9419 | 0.0726 |      40 / 180      |
+| 20_mfcc, Order 1,2,3  | 0.9384 | 0.0852 |      40 / 180      |

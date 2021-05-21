@@ -30,7 +30,21 @@ class DualGMMClassifier():
             random_state=random_state,
         )
 
-    def fit(self, X_voiced, X_unvoiced, Y_train):
+    def fit(self, X, Y):
+        """Fit the classifier.
+
+        Arugments:
+            X: 2darray -- (n_samples, n_features array).
+            Y: 1darray -- labels.
+
+        Returns:
+            self
+        """
+        X_voiced = X[Y == 1]
+        X_unvoiced = X[Y == 0]
+        return self._fit(X_voiced, X_unvoiced, Y)
+
+    def _fit(self, X_voiced, X_unvoiced, Y_train):
         """Fit the Gaussian Mixtures of the classifier.
 
         Arguments:
@@ -98,6 +112,7 @@ class DualGMMClassifier():
             (n_samples) {0, 1} labels.
         """
         proba = self.predict_proba(X)
+        proba = proba[:, 0]
         return np.where(proba >= 0.5, 1, 0)
 
     def _compute_voiced_log_likelihood(self, X):

@@ -11,7 +11,7 @@ VADClassifier = DualGMMClassifier(
     n_components=3,
     covariance_type='full',
     max_iter=500,
-    verbose=0,
+    verbose=1,
     random_state=1919810,
 )
 
