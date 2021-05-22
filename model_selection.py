@@ -13,7 +13,7 @@ n_frame = 512
 n_shift = 128
 n_mfcc = 12
 
-n_mixture_list = [1, 2, 3, 5]
+n_mixture_list = [1, 2, 3, 5, 7]
 
 if os.path.exists('./data/extracted/training_set.pkl'):
     X_train, sample_lengths, Y_train = pickle.load(
@@ -27,9 +27,21 @@ else:
         [X_train, sample_lengths, Y_train],
         open('./data/extracted/training_set.pkl', 'wb'))
 
+if os.path.exists('./data/extracted/dev_set.pkl'):
+    X_dev, sample_lengths, Y_dev = pickle.load(
+        open('./data/extracted/dev_set.pkl', 'rb'))
+else:
+    X_dev, sample_lengths, Y_dev = spectral_feature_loader(
+        dev_set_path, dev_label_path,
+        frame_size=n_frame, frame_shift=n_shift,
+        n_mfcc=n_mfcc, use_first_order=False, use_third_order=True)
+    pickle.dump(
+        [X_dev, sample_lengths, Y_dev],
+        open('./data/extracted/dev_set.pkl', 'wb'))
+
 for n_mixture in n_mixture_list:
     VADClassifier = DualGMMClassifier(
-        n_components=3,
+        n_components=n_mixture,
         covariance_type='full',
         max_iter=500,
         verbose=1,

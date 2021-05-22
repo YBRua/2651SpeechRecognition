@@ -74,3 +74,18 @@ Detect voice activity using spectral features of voice signals and statistic mac
 | 20_mfcc, Order 1,2    | 0.9380 | 0.0918 |      30 / 200      |
 | 20_mfcc, Order 2,3    | 0.9419 | 0.0726 |      40 / 180      |
 | 20_mfcc, Order 1,2,3  | 0.9384 | 0.0852 |      40 / 180      |
+
+### Model Selection
+> Benchmarked using 12_mfcc with 2nd and 3rd order deltas
+
+|    Model    | AUC on Dev |
+| :---------: | :--------: |
+| 1 Gaussian  |   0.9371   |
+| 2 Gaussian  |   0.9442   |
+| 3 Gaussian  |   0.9452   |
+| 5 Gaussian  |   0.9422   |
+| 7 Gaussian  |   0.9441   |
+| 10 Gaussian |   0.9488   |
+| 12 Gaussian |   0.9492   |
+
+Other attempts failed due to not enough memory.

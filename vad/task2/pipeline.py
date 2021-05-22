@@ -12,7 +12,9 @@ def train(
         train_set_path,
         train_label_path,
         n_frame=512,
-        n_shift=128,):
+        n_shift=128,
+        use_first_order=False,
+        use_third_order=True):
     # load datasets
     print('Loading training set...', file=sys.stderr)
     if os.path.exists('./data/extracted/training_set.pkl'):
@@ -21,7 +23,8 @@ def train(
     else:
         X_train, sample_lengths, Y_train = spectral_feature_loader(
             train_set_path, train_label_path,
-            frame_size=n_frame, frame_shift=n_shift,)
+            frame_size=n_frame, frame_shift=n_shift,
+            use_first_order=use_first_order, use_third_order=use_third_order,)
         pickle.dump(
             [X_train, sample_lengths, Y_train],
             open('./data/extracted/training_set.pkl', 'wb'))
@@ -45,6 +48,8 @@ def train(
         '  - AUC on train: {:.4f} | {:.4f}'.format(auc, auc_prob))
     print(
         '  - EER on train: {:.4f} | {:.4f}'.format(eer, eer_prob))
+        
+    return VADClassifier, auc, eer
 
 
 def evaluate(
@@ -52,7 +57,9 @@ def evaluate(
         dev_set_path,
         dev_label_path,
         n_frame=512,
-        n_shift=128,):
+        n_shift=128,
+        use_first_order=False,
+        use_third_order=True):
     print('Loading dev set...', file=sys.stderr)
     if os.path.exists('./data/extracted/dev_set.pkl'):
         X_dev, sample_lengths, Y_dev = pickle.load(
@@ -60,7 +67,8 @@ def evaluate(
     else:
         X_dev, sample_lengths, Y_dev = spectral_feature_loader(
             dev_set_path, dev_label_path,
-            frame_size=n_frame, frame_shift=n_shift)
+            frame_size=n_frame, frame_shift=n_shift,
+            use_first_order=use_first_order, use_third_order=use_third_order,)
         pickle.dump(
             [X_dev, sample_lengths, Y_dev],
             open('./data/extracted/dev_set.pkl', 'wb'))
@@ -79,3 +87,5 @@ def evaluate(
         '  - AUC on dev:   {:.4f} | {:.4f}'.format(auc, auc_prob))
     print(
         '  - EER on dev:   {:.4f} | {:.4f}'.format(eer, eer_prob))
+
+    return auc, eer

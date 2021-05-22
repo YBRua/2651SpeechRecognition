@@ -73,9 +73,10 @@ for n_mfcc in n_mfcc_list:
     clf.fit(X_train_12, Y_train)
     pred = clf.predict(X_dev_12)
     auc, eer = get_metrics(pred, Y_dev)
-    print(n_mfcc)
+    print("MFCC: ", n_mfcc)
     print('Order 1, 2')
-    print('AUC', auc, 'EER', eer)
+    print('AUC: {:.4f} | EER" {:.4f}'.format(auc, eer))
+    print()
 
     clf = DualGMMClassifier(
         n_components=3,
@@ -85,9 +86,10 @@ for n_mfcc in n_mfcc_list:
     clf.fit(X_train_23, Y_train)
     pred = clf.predict(X_dev_23)
     auc, eer = get_metrics(pred, Y_dev)
-    print(n_mfcc)
+    print("MFCC: ", n_mfcc)
     print('Order 2, 3')
-    print('AUC', auc, 'EER', eer)
+    print('AUC: {:.4f} | EER" {:.4f}'.format(auc, eer))
+    print()
 
     clf = DualGMMClassifier(
         n_components=3,
@@ -97,6 +99,7 @@ for n_mfcc in n_mfcc_list:
     clf.fit(X_train.T, Y_train)
     pred = clf.predict(X_dev.T)
     auc, eer = get_metrics(pred, Y_dev)
-    print(n_mfcc)
+    print("MFCC: ", n_mfcc)
     print('Order 1, 2, 3')
-    print('AUC', auc, 'EER', eer)
+    print('AUC: {:.4f} | EER" {:.4f}'.format(auc, eer))
+    print()
