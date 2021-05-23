@@ -81,9 +81,9 @@ def spectral_feature_loader(
     use_window='hann',
     frame_size=512,
     frame_shift=128,
-    n_mfcc=20,
-    use_first_order=True,
-    use_third_order=False
+    n_mfcc=12,
+    use_first_order=False,
+    use_third_order=True,
 ):
     """Load training (or evaluating) data from a given directory.
     Designed for Task 2.
@@ -105,17 +105,24 @@ def spectral_feature_loader(
             Useful when an GMMHMM model is used for VAD.
         Y_train: 1darray -- label of each sample.
     """
+    print_loader_info(
+        data_set_path,
+        use_window,
+        frame_size,
+        frame_shift,
+        n_mfcc,
+        use_first_order,
+        use_third_order,)
     labels = read_label_from_file(label_path)
-    n_deltas = 2
+    mfcc_batches = 2
     if use_first_order:
-        n_deltas += 1
+        mfcc_batches += 1
     if use_third_order:
-        n_deltas += 1
-    n_features = n_deltas * n_mfcc + 1
+        mfcc_batches += 1
+    n_features = mfcc_batches * n_mfcc + 1
     X_train = np.zeros([n_features, 0])
     sample_lengths = np.zeros(0, dtype=int)
     Y_train = np.zeros([0])
-    print('Loading data from {:s}'.format(data_set_path), file=sys.stderr)
     for root, dirs, files in os.walk(data_set_path):
         t = tqdm(files)
         for f in t:
@@ -141,3 +148,28 @@ def spectral_feature_loader(
                 Y_train = np.concatenate([Y_train, ground_truth])
 
     return X_train, sample_lengths, Y_train
+
+
+def print_loader_info(
+        data_set_path,
+        use_window,
+        frame_size,
+        frame_shift,
+        n_mfcc,
+        use_first_order,
+        use_third_order,):
+    print(
+        '[DataLoader] Loading data from {:s}'.format(data_set_path),
+        file=sys.stderr)
+    print(
+        '===================================',
+        file=sys.stderr)
+    print(
+        f'frame_size: {frame_size} | frame_shift: {frame_shift}',
+        file=sys.stderr)
+    print(
+        f'use_window: {use_window} | n_mfcc: {n_mfcc}',
+        file=sys.stderr)
+    print(
+        f'first_order: {use_first_order} | third_order: {use_third_order}',
+        file=sys.stderr)

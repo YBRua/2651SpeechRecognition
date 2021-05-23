@@ -49,7 +49,7 @@ Detect voice activity using spectral features of voice signals and statistic mac
   - [x] Feature Engineering
     - Note: feature engineering is run on 1500 samples from training set.
 - [x] Model selection.
-- [ ] Run on test set.
+- [x] Run on test set.
 - [ ] Technical Report.
 
 ### Memo

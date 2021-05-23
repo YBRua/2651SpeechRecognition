@@ -5,9 +5,9 @@ import numpy as np
 def extract_mfcc(
         mel_s,
         rate,
-        n_mfcc=20,
-        use_first_order=True,
-        use_third_order=False,):
+        n_mfcc=12,
+        use_first_order=False,
+        use_third_order=True,):
     """Extracts MFCC features.
     Includes MFCC and 2nd- and 3rd-order deltas.
 
@@ -61,8 +61,8 @@ def rms_energy(stft_s):
 def spectral_feature_extractor(
         data, rate=16000,
         n_frame=512, n_shift=128,
-        use_window='hann', n_mfcc=20,
-        use_first_order=True, use_third_order=False):
+        use_window='hann', n_mfcc=12,
+        use_first_order=False, use_third_order=True):
     """Extracts spectral feature.
     Includes mfcc, 1st and 2nd deltas of mfcc, and rms energy.
 
