@@ -1,15 +1,24 @@
 # AI2651 Project 1: Voice Activity Detection
 Project 1 for AI2651 Intelligent Speech Recognition.
 ## File Structure
-- `classifiers`
-  - `basic`: basic threshold classifier
-  - `dualGMM`: GMM-based machine learning classifier
-- `features`
-  - `short_time_features`: short-time feature extraction functions
-  - `spectral_features`: spectral feature extraction functions （mainly mfcc)
-- `data_loader`: functions converting input wav into features.
-- `evaluate`: auc and eer evaluation functions (provided by TA).
-- `vad_utils`: utils (Provided by TA).
+- `VAD`
+  - `Classifiers`
+    - `basic`: basic threshold classifier (task 1)
+    - `dualGMM`: GMM-based classifier (task 2)
+  - `features`
+    - `short_time_features`: short time feature extractors (task 1)
+    - `spectral_features`: spectral feature extractors (task 2)
+  - `task1`: pipelines for task 1
+  - `task2`: pipelines for task 2
+  - `data_loader`: functions for loading training and test sets
+  - `evaluate`: auc and eer metrics (provided by TA)
+  - `short_time_analysis`: task 1
+  - `vad_utils`: provided by TA
+- `feature_engineering`: selecting features for task 2
+- `model_selection`: parameter tuning for task 2
+- `parameter_tune`: parameter tuning for task 1
+- `task1`: task 1 main
+- `task2`: task 2 main
 
 ## Task 1: Simple Classifier
 Detect voice activity using short-time features of voice signals and basic linear classifiers.
@@ -88,4 +97,4 @@ Detect voice activity using spectral features of voice signals and statistic mac
 | 10 Gaussian |   0.9488   |
 | 12 Gaussian |   0.9492   |
 
-Other attempts failed due to not enough memory.
+Other attempts failed due to not enough memory. I'm poor at producing quality code :cry:.
