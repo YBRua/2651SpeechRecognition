@@ -1,6 +1,7 @@
 from sklearn.mixture import GaussianMixture
 from scipy.special import logsumexp
 import numpy as np
+import scipy.signal as signal
 
 
 class DualGMMClassifier():
@@ -114,6 +115,17 @@ class DualGMMClassifier():
         proba = self.predict_proba(X)
         proba = proba[:, 0]
         return np.where(proba >= 0.5, 1, 0)
+
+    def predict_smoothed_proba(self, x):
+        """Uses a L=15 mean filter to smooth the probability output.
+        """
+        proba = self.predict_proba(x)[:, 0]
+        filter = np.full(15, 1/15)
+        return signal.convolve(proba, filter, mode='same')
+
+    def predict_smoothed(self, x):
+        smoothed_proba = self.predict_smoothed_proba(x)
+        return np.where(smoothed_proba >= 0.5, 1, 0)
 
     def _compute_voiced_log_likelihood(self, X):
         log_likelihood, _ = self.voiced_gmm._estimate_log_prob_resp(X)

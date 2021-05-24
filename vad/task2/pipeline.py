@@ -23,9 +23,9 @@ def train(
         use_third_order=True):
     # load datasets
     print('Loading training set...', file=sys.stderr)
-    if os.path.exists('./data/extracted/training_set.pkl'):
+    if os.path.exists('./data/training_set.pkl'):
         X_train, sample_lengths, Y_train = pickle.load(
-            open('./data/extracted/training_set.pkl', 'rb'))
+            open('./data/training_set.pkl', 'rb'))
     else:
         X_train, sample_lengths, Y_train = spectral_feature_loader(
             train_set_path, train_label_path,
@@ -35,7 +35,7 @@ def train(
             use_first_order=use_first_order, use_third_order=use_third_order,)
         pickle.dump(
             [X_train, sample_lengths, Y_train],
-            open('./data/extracted/training_set.pkl', 'wb'))
+            open('./data/training_set.pkl', 'wb'))
 
     # convert data
     X_train = X_train.T  # (n_features, n_samples) -> (n_samples, n_features)
@@ -45,7 +45,7 @@ def train(
     VADClassifier.fit(X_train, Y_train)
 
     # evaluate on training set
-    pred_train_prob = VADClassifier.predict_proba(X_train)[:, 0]
+    pred_train_prob = VADClassifier.predict_smoothed_proba(X_train)
     pred_train = np.where(pred_train_prob >= 0.5, 1, 0)
 
     auc_prob, eer_prob = get_metrics(pred_train_prob, Y_train)
@@ -71,9 +71,9 @@ def evaluate(
         use_first_order=False,
         use_third_order=True):
     print('Loading dev set...', file=sys.stderr)
-    if os.path.exists('./data/extracted/dev_set.pkl'):
+    if os.path.exists('./data/dev_set.pkl'):
         X_dev, sample_lengths, Y_dev = pickle.load(
-            open('./data/extracted/dev_set.pkl', 'rb'))
+            open('./data/dev_set.pkl', 'rb'))
     else:
         X_dev, sample_lengths, Y_dev = spectral_feature_loader(
             dev_set_path, dev_label_path,
@@ -83,12 +83,12 @@ def evaluate(
             use_first_order=use_first_order, use_third_order=use_third_order,)
         pickle.dump(
             [X_dev, sample_lengths, Y_dev],
-            open('./data/extracted/dev_set.pkl', 'wb'))
+            open('./data/dev_set.pkl', 'wb'))
 
     X_dev = X_dev.T
 
     print('Evaluating model...', file=sys.stderr)
-    pred_dev_prob = VADClassifier.predict_proba(X_dev)[:, 0]
+    pred_dev_prob = VADClassifier.predict_smoothed_proba(X_dev)
     pred_dev = np.where(pred_dev_prob >= 0.5, 1, 0)
 
     auc_prob, eer_prob = get_metrics(pred_dev_prob, Y_dev)
@@ -139,7 +139,7 @@ def run_on_test(
                         use_third_order=use_third_order,)
 
                     # predict
-                    pred = VADClassifier.predict_proba(file_feature.T)[:, 0]
+                    pred = VADClassifier.predict_smoothed_proba(file_feature.T)
                     result = prediction_to_vad_label(pred)
                     output.write(result)
                     output.write('\n')

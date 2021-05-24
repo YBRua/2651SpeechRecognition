@@ -44,6 +44,8 @@ Detect voice activity using short-time features of voice signals and basic linea
 Detect voice activity using spectral features of voice signals and statistic machine learning classifiers.
 
 ### Progress
+> Done! No more VAD!
+
 - [x] MFCC feature extraction
 - [x] GMMHMM test run.
   - GMM: AUC 0.86 (trained on dev set)
@@ -59,7 +61,7 @@ Detect voice activity using spectral features of voice signals and statistic mac
     - Note: feature engineering is run on 1500 samples from training set.
 - [x] Model selection.
 - [x] Run on test set.
-- [ ] Technical Report.
+- [x] Technical Report.
 
 ### Memo
 - Feature extraction on training set is SLOW.
